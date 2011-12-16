@@ -126,12 +126,12 @@
             });
 
             console.time('Multi');
-            $multi.transition({left: 500}, 1000, 'linear', function() {
-                $multi.transition({left: 100}, 1000, 'easeInOutExpo', function() {
+            $.when($multi.transition({left: 500}, 1000, 'linear')).done(function () {
+                $.when($multi.transition({left: 100}, 1000, 'easeInOutExpo')).done(function() {
                     $multi.transition({left: 500});
 
                     setTimeout(function() {
-                        $multi.transition({left: 100, top: 300, opacity: 0.5}, 2000, 'easeOutQuad', function() {
+                        $.when($multi.transition({left: 100, top: 300, opacity: 0.5}, 2000, 'easeOutQuad')).done(function() {
                             console.timeEnd('Multi');
                         });
                     }, 100);
