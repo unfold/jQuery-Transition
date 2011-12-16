@@ -87,7 +87,7 @@
             $boxes.css({left: 100, top: 100});
 
             // Set blue a bit lower
-            $blue.css({left: 200, top: 200});
+            $blue.transition({left: 200, top: 200, use3d: false});
 
             // Convert red to accelerated
             $red.transition();
@@ -97,14 +97,14 @@
             $green.transition({left: 200, top: 300});
             $yellow.transition({left: 200, top: 400});
 
-            // Move both
+            // Animate blue without using 3d transforms
             console.time('Blue');
-            $blue.animate({left: 500}, 1000, 'linear', function() {
-                $blue.animate({left: 100}, 1000, 'easeInOutExpo', function() {
-                    $blue.css({left: 500});
+            $blue.transition({left: 500, use3d: false}, 1000, 'linear', function() {
+                $blue.transition({left: 100, use3d: false}, 1000, 'easeInOutExpo', function() {
+                    $blue.transition({left: 500, use3d: false});
 
                     setTimeout(function() {
-                        $blue.animate({left: 100, top: 100, opacity: 0.5}, 2000, 'easeOutQuad', function() {
+                        $blue.transition({left: 100, top: 100, opacity: 0.5, use3d: false}, 2000, 'easeOutQuad', function() {
                             console.timeEnd('Blue');
                         });
                     }, 100);
@@ -112,6 +112,7 @@
 
             });
 
+            // Animate red using 3d transforms
             console.time('Red');
             $red.transition({left: 500}, 1000, 'linear', function() {
                 $red.transition({left: 100}, 1000, 'easeInOutExpo', function() {
@@ -125,6 +126,7 @@
                 });
             });
 
+            // Animate yellow and green using 3d transforms
             console.time('Multi');
             $.when($multi.transition({left: 500}, 1000, 'linear')).done(function () {
                 $.when($multi.transition({left: 100}, 1000, 'easeInOutExpo')).done(function() {

@@ -1,46 +1,50 @@
 (function($) {
-    if (Modernizr.csstransforms3d) {
-        var cssPropertyPrefix = function(property) {
-            return Modernizr.prefixed ? Modernizr.prefixed(property).replace(/([A-Z])/g, function(value, match) { return '-' + match.toLowerCase(); }).replace(/^ms-/, '-ms-') : property;
-        };
+    var cssPropertyPrefix = function(property) {
+        return Modernizr.prefixed ? Modernizr.prefixed(property).replace(/([A-Z])/g, function(value, match) { return '-' + match.toLowerCase(); }).replace(/^ms-/, '-ms-') : property;
+    };
 
-        var cssEasings = {
-            easeInQuad:     '0.550, 0.085, 0.680, 0.530',
-            easeInCubic:    '0.550, 0.055, 0.675, 0.190',
-            easeInQuart:    '0.895, 0.030, 0.685, 0.220',
-            easeInQuint:    '0.755, 0.050, 0.855, 0.060',
-            easeInSine:     '0.470, 0.000, 0.745, 0.715',
-            easeInExpo:     '0.950, 0.050, 0.795, 0.035',
-            easeInCirc:     '0.600, 0.040, 0.980, 0.335',
-            easeOutQuad:    '0.250, 0.460, 0.450, 0.940',
-            easeOutCubic:   '0.215, 0.610, 0.355, 1.000',
-            easeOutQuart:   '0.165, 0.840, 0.440, 1.000',
-            easeOutQuint:   '0.230, 1.000, 0.320, 1.000',
-            easeOutSine:    '0.390, 0.575, 0.565, 1.000',
-            easeOutExpo:    '0.190, 1.000, 0.220, 1.000',
-            easeOutCirc:    '0.075, 0.820, 0.165, 1.000',
-            easeInOutQuad:  '0.455, 0.030, 0.515, 0.955',
-            easeInOutCubic: '0.645, 0.045, 0.355, 1.000',
-            easeInOutQuart: '0.770, 0.000, 0.175, 1.000',
-            easeInOutQuint: '0.860, 0.000, 0.070, 1.000',
-            easeInOutSine:  '0.445, 0.050, 0.550, 0.950',
-            easeInOutExpo:  '1.000, 0.000, 0.000, 1.000',
-            easeInOutCirc:  '0.785, 0.135, 0.150, 0.860'
-        };
+    var cssEasings = {
+        easeInQuad:     '0.550, 0.085, 0.680, 0.530',
+        easeInCubic:    '0.550, 0.055, 0.675, 0.190',
+        easeInQuart:    '0.895, 0.030, 0.685, 0.220',
+        easeInQuint:    '0.755, 0.050, 0.855, 0.060',
+        easeInSine:     '0.470, 0.000, 0.745, 0.715',
+        easeInExpo:     '0.950, 0.050, 0.795, 0.035',
+        easeInCirc:     '0.600, 0.040, 0.980, 0.335',
+        easeOutQuad:    '0.250, 0.460, 0.450, 0.940',
+        easeOutCubic:   '0.215, 0.610, 0.355, 1.000',
+        easeOutQuart:   '0.165, 0.840, 0.440, 1.000',
+        easeOutQuint:   '0.230, 1.000, 0.320, 1.000',
+        easeOutSine:    '0.390, 0.575, 0.565, 1.000',
+        easeOutExpo:    '0.190, 1.000, 0.220, 1.000',
+        easeOutCirc:    '0.075, 0.820, 0.165, 1.000',
+        easeInOutQuad:  '0.455, 0.030, 0.515, 0.955',
+        easeInOutCubic: '0.645, 0.045, 0.355, 1.000',
+        easeInOutQuart: '0.770, 0.000, 0.175, 1.000',
+        easeInOutQuint: '0.860, 0.000, 0.070, 1.000',
+        easeInOutSine:  '0.445, 0.050, 0.550, 0.950',
+        easeInOutExpo:  '1.000, 0.000, 0.000, 1.000',
+        easeInOutCirc:  '0.785, 0.135, 0.150, 0.860'
+    };
 
-        var completeEventNames = {
-            'WebkitTransition': 'webkitTransitionEnd',
-            'MozTransition'   : 'transitionend',
-            'OTransition'     : 'oTransitionEnd',
-            'msTransition'    : 'msTransitionEnd',
-            'transition'      : 'transitionEnd'
-        };
+    var completeEventNames = {
+        'WebkitTransition': 'webkitTransitionEnd',
+        'MozTransition'   : 'transitionend',
+        'OTransition'     : 'oTransitionEnd',
+        'msTransition'    : 'msTransitionEnd',
+        'transition'      : 'transitionEnd'
+    };
 
-        var transitionPrefixed = cssPropertyPrefix('transition');
-        var transformPrefixed = cssPropertyPrefix('transform');
-        var transformCompleteEvent = completeEventNames[Modernizr.prefixed('transition')];
+    var transitionPrefixed = cssPropertyPrefix('transition');
+    var transformPrefixed = cssPropertyPrefix('transform');
+    var transformCompleteEvent = completeEventNames[Modernizr.prefixed('transition')];
 
-        $.fn.transition = function(originalProperties, duration, easing, complete) {
+    $.fn.transition = function(originalProperties, duration, easing, complete) {
+        var use3d = originalProperties && originalProperties.use3d === undefined;
+
+        if (use3d && Modernizr.csstransforms3d) {
+            var deferred = new jQuery.Deferred();
+
             this.each(function(index) {
                 var $el = $(this);
                 var properties = $.extend({
@@ -93,29 +97,42 @@
                     }
 
                     transitions = transitionProperties.join(', ');
-
-                    if (complete) {
-                        $el.one(transformCompleteEvent, complete);
-                    }
-                } else if (complete) {
-                    complete();
                 }
 
                 // Finally update our properties object with our transitions and set the CSS
                 properties[transitionPrefixed] = transitions;
 
                 $el.css(properties);
+
+                // Register callbacks
+                if (duration) {
+                    $el.one(transformCompleteEvent, function() {
+                        if (complete) {
+                            complete();
+                        }
+
+                        if (!index) {
+                            deferred.resolve();
+                        }
+                    });
+                } else {
+                    if (complete) {
+                        complete();
+                    }
+
+                    if (!index) {
+                        deferred.resolve();
+                    }
+                }
             });
 
-            return this;
-        };
-    } else {
-        $.fn.transition = function(properties, duration, easing, complete) {
+            return deferred.promise();
+        } else {
             if (duration > 0) {
-                return this.animate(properties, duration, easing, complete);
-            } else if (properties) {
-                return this.css(properties);
+                return this.animate(originalProperties, duration, easing, complete);
+            } else if (originalProperties) {
+                return this.css(originalProperties);
             }
-        };
-    }
+        }
+    };
 })(jQuery);
